@@ -17,6 +17,8 @@ public class SendFrame extends JFrame{
     private static JButton submitBtn;
     private static JButton cancelBtn;
 
+    private static boolean mousePressed = true;
+
     public static void main(String[] args) {
         new SendFrame().setVisible(true);
     }
@@ -128,6 +130,12 @@ public class SendFrame extends JFrame{
                             orgX = e.getX();
                             orgY = e.getY();
                         }
+                        if (!mousePressed){
+                            orgX = -1;
+                            orgY = -1;
+                            mousePressed = true;
+                            System.out.println("changed");
+                        }
                         int x = e.getX() - orgX + sendFrame.getLocation().x;
                         int y = e.getY() - orgY + sendFrame.getLocation().y;
                         sendFrame.setLocation(x,y);
@@ -135,5 +143,12 @@ public class SendFrame extends JFrame{
                 });
             }
         }).start();
+
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                mousePressed = false;
+            }
+        });
     }
 }
