@@ -37,6 +37,14 @@ public class SendFrame extends JFrame{
         return ips;
     }
 
+    public static void setIsSending(boolean Sending){
+        isSending = Sending;
+    }
+
+    public static void appendSentMsg(String msg){
+        fileInfoTxa.append("Send Status :"+msg);
+    }
+
     public static void main(String[] args) {
         new SendFrame().setVisible(true);
     }
@@ -204,8 +212,14 @@ public class SendFrame extends JFrame{
         submitBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                getIP();
-                isSending = true;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getIP();
+                        isSending = true;
+                        Send.start();
+                    }
+                }).start();
             }
         });
 
@@ -218,12 +232,14 @@ public class SendFrame extends JFrame{
                     int status = JOptionPane.showOptionDialog(sendFrame, "Click OK to Continue",
                             "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                             null, options, options[0]);
-                    //user select value (Cancel = -1)
-                    if (status != JOptionPane.CLOSED_OPTION){
+                    //user select value 0 = OK , 1 = Cancel
+                    if (status == 0){
                         System.exit(1);
+                        Send.end();
                     }
                 } else {
-                  System.exit(0);
+                    Send.end();
+                    System.exit(0);
                 }
             }
         });

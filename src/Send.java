@@ -14,7 +14,7 @@ public class Send {
     private static DatagramSocket confirmSocket;
 
     private static int[] ip = SendFrame.getIps();
-
+    private static String ipStr = ip[0]+"."+ip[1]+"."+ip[2]+"."+ip[3];
     private Send(){}
 
     public static void start(){
@@ -23,12 +23,12 @@ public class Send {
             fis = new FileInputStream(srcfile);
             socket = new DatagramSocket();
             int len;
-            byte[] buffer = new byte[102400];
+            byte[] buffer = new byte[32768];
+            //receive confirm messege
             confirmSocket = new DatagramSocket(13142);
             confirmPacket = new DatagramPacket(buffer,buffer.length);
             while ((len = fis.read(buffer)) != -1){
-                packet = new DatagramPacket(buffer,len, InetAddress.getByName(
-                        ip[0]+"."+ip[1]+"."+ip[2]+"."+ip[3]),13141);
+                packet = new DatagramPacket(buffer,len, InetAddress.getByName(ipStr),13141);
                 socket.send(packet);
                 while(true){
                     confirmSocket.receive(confirmPacket);
@@ -37,6 +37,9 @@ public class Send {
                     }
                 }
             }
+            packet = new DatagramPacket(buffer,0,InetAddress.getByName(ipStr),13141);
+            socket.send(packet);
+            SendFrame.appendSentMsg(srcfile.getName()+" Done.");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,5 +56,6 @@ public class Send {
         }
         socket.close();
         confirmSocket.close();
+        SendFrame.setIsSending(false);
     }
 }
