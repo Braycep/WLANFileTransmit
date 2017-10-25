@@ -18,7 +18,6 @@ public class SendFrame extends JFrame{
     public SendFrame(){
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //setBounds(0,0,ScreenSize.WIDTH, ScreenSize.HEIGHT);
         setBounds(ScreenSize.WIDTH/3, ScreenSize.HEIGHT/4,ScreenSize.WIDTH/4,ScreenSize.HEIGHT/3);
         //setUndecorated(true);
 
@@ -26,5 +25,19 @@ public class SendFrame extends JFrame{
         panel = new JPanel(null);
         panel.setBackground(new Color(0,150,136));
         add(panel,BorderLayout.CENTER);
+
+        //containers
+        initPanel();
+
+        //Events
+        events();
+    }
+
+    private void initPanel() {
+
+    }
+
+    private void events() {
+
     }
 }
