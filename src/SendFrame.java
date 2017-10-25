@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.Locale;
 
 public class SendFrame extends JFrame{
     private static JFrame sendFrame;
@@ -16,6 +17,7 @@ public class SendFrame extends JFrame{
     private static JButton chsFileBtn;
     private static JButton submitBtn;
     private static JButton cancelBtn;
+    private static JFileChooser jFileChooser;
 
     private static boolean mousePressed = true;
 
@@ -46,7 +48,7 @@ public class SendFrame extends JFrame{
     private void initPanel() {
         //close button
         closeBtn = new JButton();
-        closeBtn.setBackground(new Color(255,0,0));
+        closeBtn.setBackground(new Color(0,150,136));
         closeBtn.setFont(new Font("",Font.PLAIN,5));
         closeBtn.setBorder(new LineBorder(new Color(0,150,136)));
         closeBtn.setBounds(ScreenSize.FRAME_WIDTH-20,0,20,20);
@@ -86,7 +88,7 @@ public class SendFrame extends JFrame{
         fileInfoTxa.setBackground(Color.white);
         fileInfoTxa.setForeground(Color.black);
         fileInfoTxa.setBorder(new LineBorder(new Color(100,100,100)));
-        fileInfoTxa.setBounds(25,110,ScreenSize.FRAME_WIDTH - 50,ScreenSize.FRAME_HEIGHT/2);
+        fileInfoTxa.setBounds(25,110,ScreenSize.FRAME_WIDTH - 50,105);
         panel.add(fileInfoTxa);
 
         //sent button
@@ -110,7 +112,19 @@ public class SendFrame extends JFrame{
     }
 
     private void events() {
-        //close
+        //close operation
+        closeBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                closeBtn.setBackground(Color.red);
+            }
+        });
+        closeBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent e) {
+                closeBtn.setBackground(new Color(0,150,136));
+            }
+        });
         closeBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -118,7 +132,7 @@ public class SendFrame extends JFrame{
             }
         });
 
-        //move
+        //move and drag
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -147,6 +161,22 @@ public class SendFrame extends JFrame{
             @Override
             public void mouseReleased(MouseEvent e) {
                 mousePressed = false;
+            }
+        });
+
+        //choose file
+        chsFileBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                jFileChooser = new JFileChooser("D:\\");
+                jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                if (Locale.getDefault().getLanguage().toLowerCase().equals("zh")){
+                    jFileChooser.showDialog(new JLabel(),"选择");
+                }else{
+                    jFileChooser.showDialog(new JLabel(),"Choose");
+                }
+                //if not chosen jFileChooser return null
+
             }
         });
     }
