@@ -33,6 +33,10 @@ public class SendFrame extends JFrame{
         return chsFile;
     }
 
+    public static int[] getIps(){
+        return ips;
+    }
+
     public static void main(String[] args) {
         new SendFrame().setVisible(true);
     }
@@ -201,6 +205,7 @@ public class SendFrame extends JFrame{
             @Override
             public void mouseReleased(MouseEvent e) {
                 getIP();
+                isSending = true;
             }
         });
 
@@ -210,9 +215,13 @@ public class SendFrame extends JFrame{
             public void mouseReleased(MouseEvent e) {
                 if (isSending){
                     Object[] options = { "OK", "CANCEL" };
-                    JOptionPane.showOptionDialog(sendFrame, "Click OK to Continue", "Warning",
-                            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                    int status = JOptionPane.showOptionDialog(sendFrame, "Click OK to Continue",
+                            "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                             null, options, options[0]);
+                    //user select value (Cancel = -1)
+                    if (status != JOptionPane.CLOSED_OPTION){
+                        System.exit(1);
+                    }
                 } else {
                   System.exit(0);
                 }
