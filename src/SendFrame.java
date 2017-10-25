@@ -4,22 +4,33 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.io.File;
 import java.util.Locale;
 
 public class SendFrame extends JFrame{
+    //containers
     private static JFrame sendFrame;
     private static JPanel panel;
-    private static JLabel chsFileLbl;
+    private static JLabel ipLbl;
+    private static JTextField desIPTxf;
     private static JLabel fileInfoLbl;
-    private static JTextField chsFileTxf;
-    private static JTextArea fileInfoTxa;
+    private static TextArea fileInfoTxa;
     private static JButton closeBtn;
     private static JButton chsFileBtn;
     private static JButton submitBtn;
     private static JButton cancelBtn;
     private static JFileChooser jFileChooser;
 
+    //files
+    protected static File chsFile;
+
+    //flags
     private static boolean mousePressed = true;
+    private static boolean isSending = false;
+
+    public static File getChsFile(){
+        return chsFile;
+    }
 
     public static void main(String[] args) {
         new SendFrame().setVisible(true);
@@ -54,18 +65,22 @@ public class SendFrame extends JFrame{
         closeBtn.setBounds(ScreenSize.FRAME_WIDTH-20,0,20,20);
         panel.add(closeBtn);
 
-        //choose file's tip
-        chsFileLbl = new JLabel("Choose Your File :");
-        chsFileLbl.setForeground(Color.white);
-        chsFileLbl.setFont(new Font("",Font.BOLD,15));
-        chsFileLbl.setBounds(25,20,ScreenSize.FRAME_WIDTH - 50,20);
-        panel.add(chsFileLbl);
+        //ip tips
+        ipLbl = new JLabel("Target IP Address :");
+        ipLbl.setForeground(Color.white);
+        ipLbl.setFont(new Font("",Font.BOLD,15));
+        ipLbl.setBounds(25,20,ScreenSize.FRAME_WIDTH - 50,20);
+        panel.add(ipLbl);
 
-        //show chosen file
-        chsFileTxf = new JTextField("");
-        chsFileTxf.setBounds(25,50,ScreenSize.FRAME_WIDTH - 50,20);
-        chsFileTxf.setBorder(new LineBorder(new Color(100,100,100)));
-        panel.add(chsFileTxf);
+        //input des ip
+        desIPTxf = new JTextField("255.255.255.255");
+        desIPTxf.setFont(new Font("courier new",Font.PLAIN,15));
+        desIPTxf.setBackground(Color.white);
+        desIPTxf.setForeground(Color.black);
+        desIPTxf.setHorizontalAlignment(SwingConstants.CENTER);
+        desIPTxf.setBounds(25,50,ScreenSize.FRAME_WIDTH - 50,20);
+        desIPTxf.setBorder(new LineBorder(new Color(100,100,100)));
+        panel.add(desIPTxf);
 
         //choose file button
         chsFileBtn = new JButton("> > >");
@@ -83,12 +98,12 @@ public class SendFrame extends JFrame{
         panel.add(fileInfoLbl);
 
         //file info textares
-        fileInfoTxa = new JTextArea();
-        fileInfoTxa.setFont(new Font("",Font.PLAIN,15));
+        fileInfoTxa = new TextArea("",0,0,TextArea.SCROLLBARS_BOTH);
+        fileInfoTxa.setFont(new Font("",Font.PLAIN,10));
         fileInfoTxa.setBackground(Color.white);
         fileInfoTxa.setForeground(Color.black);
-        fileInfoTxa.setBorder(new LineBorder(new Color(100,100,100)));
         fileInfoTxa.setBounds(25,110,ScreenSize.FRAME_WIDTH - 50,105);
+        fileInfoTxa.setEditable(false);
         panel.add(fileInfoTxa);
 
         //sent button
@@ -101,7 +116,6 @@ public class SendFrame extends JFrame{
         panel.add(submitBtn);
 
         //cancel button
-        //sent button
         cancelBtn = new JButton("Cancle");
         cancelBtn.setFont(new Font("",Font.PLAIN,15));
         cancelBtn.setHorizontalAlignment(SwingConstants.CENTER);
@@ -176,8 +190,55 @@ public class SendFrame extends JFrame{
                     jFileChooser.showDialog(new JLabel(),"Choose");
                 }
                 //if not chosen jFileChooser return null
-
+                chsFile = jFileChooser.getSelectedFile();
+                showChsFile(chsFile);
             }
         });
+
+        //submit
+        submitBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                System.out.println("send file");
+            }
+        });
+
+        //cancel
+        cancelBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (isSending){
+                    Object[] options = { "OK", "CANCEL" };
+                    JOptionPane.showOptionDialog(sendFrame, "Click OK to Continue", "Warning",
+                            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                            null, options, options[0]);
+                } else {
+                  System.exit(0);
+                }
+            }
+        });
+    }
+
+    private void showChsFile(File chsFile) {
+        if (chsFile == null){
+            fileInfoLbl.setText("File Not Found");
+        } else {
+            String[] name = chsFile.getName().split("\\.");
+            fileInfoLbl.setText(chsFile.getAbsolutePath()+";");
+            fileInfoTxa.setText("File Name: "+chsFile.getName()+"\n");
+            fileInfoTxa.append("Expanded-name: "+name[name.length-1]+"\n");
+            long len = chsFile.length();
+            if (len < 10240){
+                fileInfoTxa.append("Size: "+(chsFile.length())+" B\n");
+            }else if (len >= 10240 && len < 1024000) {
+                //10K~1000K
+                fileInfoTxa.append("Size: "+(chsFile.length()/1024)+" Kb\n");
+            }else if (len >= 1024000 && len < 102400000) {
+                fileInfoTxa.append("Size: "+(chsFile.length()/1024/1024)+" Mb\n");
+            }else {
+                fileInfoTxa.append("Size: "+(chsFile.length()/1024/1024/1024)+" Gb\n");
+            }
+            fileInfoTxa.append("Location: "+chsFile.getAbsolutePath()+"\n");
+        }
     }
 }
