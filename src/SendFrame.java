@@ -23,6 +23,7 @@ public class SendFrame extends JFrame{
 
     //files
     protected static File chsFile;
+    protected static int[] ips = new int[4];
 
     //flags
     private static boolean mousePressed = true;
@@ -199,7 +200,7 @@ public class SendFrame extends JFrame{
         submitBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                System.out.println("send file");
+                getIP();
             }
         });
 
@@ -217,6 +218,22 @@ public class SendFrame extends JFrame{
                 }
             }
         });
+    }
+
+    private void getIP() {
+        String[] ip = desIPTxf.getText().split("\\.");
+        try{
+            for(int i = 0;i<ips.length;i++){
+                ips[i] = Integer.parseInt(ip[i]);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        for(int i:ips){
+            if (i < 0 || i > 255){
+                JOptionPane.showMessageDialog(sendFrame, "IP Address Incorrect!", "Warning", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void showChsFile(File chsFile) {
