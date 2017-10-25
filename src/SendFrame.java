@@ -3,6 +3,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 public class SendFrame extends JFrame{
     private static JFrame sendFrame;
@@ -116,5 +117,23 @@ public class SendFrame extends JFrame{
         });
 
         //move
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                panel.addMouseMotionListener(new MouseMotionAdapter() {
+                    int orgX = -1 , orgY = -1;
+                    @Override
+                    public void mouseDragged(MouseEvent e) {
+                        if(orgX == -1 && orgY == -1){
+                            orgX = e.getX();
+                            orgY = e.getY();
+                        }
+                        int x = e.getX() - orgX + sendFrame.getLocation().x;
+                        int y = e.getY() - orgY + sendFrame.getLocation().y;
+                        sendFrame.setLocation(x,y);
+                    }
+                });
+            }
+        }).start();
     }
 }
