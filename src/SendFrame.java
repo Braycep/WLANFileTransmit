@@ -126,15 +126,14 @@ public class SendFrame extends JFrame{
                     int orgX = -1 , orgY = -1;
                     @Override
                     public void mouseDragged(MouseEvent e) {
-                        if(orgX == -1 && orgY == -1){
-                            orgX = e.getX();
-                            orgY = e.getY();
-                        }
                         if (!mousePressed){
                             orgX = -1;
                             orgY = -1;
                             mousePressed = true;
-                            System.out.println("changed");
+                        }
+                        if(orgX == -1 && orgY == -1){
+                            orgX = e.getX();
+                            orgY = e.getY();
                         }
                         int x = e.getX() - orgX + sendFrame.getLocation().x;
                         int y = e.getY() - orgY + sendFrame.getLocation().y;
