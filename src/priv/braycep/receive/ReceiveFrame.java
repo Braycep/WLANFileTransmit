@@ -7,10 +7,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Locale;
 
 public class ReceiveFrame extends JFrame{
@@ -80,9 +77,10 @@ public class ReceiveFrame extends JFrame{
         ipLbl.setBounds(25,20, FrameSolution.FRAME_WIDTH - 50,20);
         panel.add(ipLbl);
 
-        //input des ip
+        //mine ip
         desIPTxf = new JTextField(myIP());
         desIPTxf.setFont(new Font("courier new",Font.PLAIN,15));
+        desIPTxf.setEditable(false);
         desIPTxf.setBackground(Color.white);
         desIPTxf.setForeground(Color.black);
         desIPTxf.setHorizontalAlignment(SwingConstants.CENTER);
@@ -144,12 +142,19 @@ public class ReceiveFrame extends JFrame{
         String ip = null;
         try {
             Process process = Runtime.getRuntime().exec("ipconfig");
-            String str = null;
+            String line = null;
+            String[] result = null;
             InputStream bis = process.getInputStream();
-            byte[] b = new byte[102400];
-            int len;
-            while ((len = bis.read(b)) != -1){
-                str = String.valueOf(b);
+            BufferedReader br = new BufferedReader(new InputStreamReader(bis));
+            while ((line = br.readLine()) != null){
+                if (line.contains("IPv4")){
+                    result = line.split("\\:");
+                }
+            }
+            if (result != null){
+                ip = result[result.length - 1].trim();
+            } else {
+                JOptionPane.showMessageDialog(receiveFrame,"Network Unreachable!");
             }
         } catch (IOException e) {
             e.printStackTrace();
