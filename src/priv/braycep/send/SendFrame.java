@@ -228,7 +228,9 @@ public class SendFrame extends JFrame{
                     jFileChooser.showDialog(new JLabel(),"Choose");
                 }
                 //if not chosen jFileChooser return null
-                chsFile = jFileChooser.getSelectedFile();
+                if (jFileChooser.getSelectedFile().isDirectory()){
+                    JOptionPane.showMessageDialog(sendFrame,"You Have Selected a Directory,Please Select a File!");
+                }
                 showChsFile(chsFile);
             }
         });
