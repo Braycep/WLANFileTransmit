@@ -8,6 +8,8 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Locale;
 
 public class ReceiveFrame extends JFrame{
@@ -62,6 +64,10 @@ public class ReceiveFrame extends JFrame{
 
         //Events
         events();
+
+        //about my ip
+        JOptionPane.showMessageDialog(this,"You May Have Many Other IPs ,So You Have to Choose " +
+                "the Correct One ,Whitch You Want to Use!","Warning",JOptionPane.WARNING_MESSAGE);
     }
 
     //components
@@ -81,7 +87,7 @@ public class ReceiveFrame extends JFrame{
         ipLbl.setBounds(25,20, FrameSolution.FRAME_WIDTH - 50,20);
         panel.add(ipLbl);
 
-        //mine ip
+        //my ip
         desIPTxf = new JTextField(myIP());
         desIPTxf.setFont(new Font("courier new",Font.PLAIN,15));
         desIPTxf.setEditable(false);
@@ -219,7 +225,7 @@ public class ReceiveFrame extends JFrame{
                 }
                 //user can find directory only
                 if (jFileChooser.getSelectedFile() == null) {
-                    JOptionPane.showMessageDialog(receiveFrame,"You Haven't Selected a File!");
+                    JOptionPane.showMessageDialog(receiveFrame,"You Haven't Selected a File!","Warning",JOptionPane.WARNING_MESSAGE);
                 } else {
                     if (!jFileChooser.getSelectedFile().canWrite()) {
                         JOptionPane.showMessageDialog(receiveFrame,"This Location Can't Be Write!");
@@ -263,14 +269,14 @@ public class ReceiveFrame extends JFrame{
      */
     private String myIP() {
         String ip = null;
-        try {
+        /*try {
             Process process = Runtime.getRuntime().exec("ipconfig");
             String line = null;
             String[] result = null;
             InputStream bis = process.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(bis));
             while ((line = br.readLine()) != null){
-                if (line.contains("IPv4")){
+                if (!line.contains("VPN") && (!line.contains("VM") && (line.contains("IPv4")))){
                     result = line.split("\\:");
                 }
             }
@@ -280,6 +286,11 @@ public class ReceiveFrame extends JFrame{
                 JOptionPane.showMessageDialog(receiveFrame,"Network Unreachable!");
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+        try {
+            ip = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
             e.printStackTrace();
         }
         return ip;

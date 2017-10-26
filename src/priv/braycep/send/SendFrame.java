@@ -321,24 +321,20 @@ public class SendFrame extends JFrame{
     }
 
     private void showChsFile(File chsFile) {
-        if (chsFile == null){
-            fileInfoLbl.setText("File Not Found");
-        } else {
-            String[] name = chsFile.getName().split("\\.");
-            fileInfoTxa.setText("File Name: "+chsFile.getName()+"\n");
-            fileInfoTxa.append("Expanded-name: "+name[name.length-1]+"\n");
-            long len = chsFile.length();
-            if (len < 10240){
-                fileInfoTxa.append("Size: "+(chsFile.length())+" B\n");
-            }else if (len >= 10240 && len < 1024000) {
-                //10K~1000K
-                fileInfoTxa.append("Size: "+(chsFile.length()/1024)+" Kb\n");
-            }else if (len >= 1024000 && len < 102400000) {
-                fileInfoTxa.append("Size: "+(chsFile.length()/1024/1024)+" Mb\n");
-            }else {
-                fileInfoTxa.append("Size: "+(chsFile.length()/1024/1024/1024)+" Gb\n");
-            }
-            fileInfoTxa.append("Location: "+chsFile.getAbsolutePath()+"\n");
+        String[] name = chsFile.getName().split("\\.");
+        fileInfoTxa.setText("File Name: "+chsFile.getName()+"\n");
+        fileInfoTxa.append("Expanded-name: "+name[name.length-1]+"\n");
+        long len = chsFile.length();
+        if (len < 10240){
+            fileInfoTxa.append("Size: "+(chsFile.length())+" B\n");
+        }else if (len >= 10240 && len < 1024000) {
+            //10K~1000K
+            fileInfoTxa.append("Size: "+(chsFile.length()/1024)+" Kb\n");
+        }else if (len >= 1024000 && len < 102400000) {
+            fileInfoTxa.append("Size: "+(chsFile.length()/1024/1024)+" Mb\n");
+        }else {
+            fileInfoTxa.append("Size: "+(chsFile.length()/1024/1024/1024)+" Gb\n");
         }
+        fileInfoTxa.append("Location: "+chsFile.getAbsolutePath()+"\n");
     }
 }
