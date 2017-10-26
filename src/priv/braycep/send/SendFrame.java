@@ -52,7 +52,7 @@ public class SendFrame extends JFrame{
     }
 
     public static void appendSentMsg(String msg){
-        fileInfoTxa.append("priv.braycep.send.Send Status :"+msg);
+        fileInfoTxa.append("Status :"+msg);
     }
 
     public static void main(String[] args) {
@@ -61,7 +61,7 @@ public class SendFrame extends JFrame{
 
     public SendFrame(){
         sendFrame = this;
-        setTitle("priv.braycep.send.SendFrame v1.0");
+        setTitle("Wlan File Transmitor v1.0");
         setLayout(new BorderLayout());
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(FrameSolution.FRAME_X, FrameSolution.FRAME_Y, FrameSolution.FRAME_WIDTH, FrameSolution.FRAME_HEIGHT);
