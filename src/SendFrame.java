@@ -172,7 +172,7 @@ public class SendFrame extends JFrame{
         closeBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                System.exit(1);
+                confirmExit();
             }
         });
 
