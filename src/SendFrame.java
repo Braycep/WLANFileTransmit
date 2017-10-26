@@ -1,9 +1,7 @@
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.io.File;
 import java.util.Locale;
 
@@ -14,6 +12,7 @@ public class SendFrame extends JFrame{
     private static JLabel ipLbl;
     private static JTextField desIPTxf;
     private static JLabel fileInfoLbl;
+    private static JLabel times;
     private static TextArea fileInfoTxa;
     private static JButton closeBtn;
     private static JButton chsFileBtn;
@@ -28,6 +27,9 @@ public class SendFrame extends JFrame{
     //flags
     private static boolean mousePressed = true;
     private static boolean isSending = false;
+
+    //other value
+    private static int time = 0;
 
     public static File getChsFile(){
         return chsFile;
@@ -53,7 +55,7 @@ public class SendFrame extends JFrame{
         sendFrame = this;
         setTitle("SendFrame v1.0");
         setLayout(new BorderLayout());
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(ScreenSize.FRAME_X,ScreenSize.FRAME_Y,ScreenSize.FRAME_WIDTH,ScreenSize.FRAME_HEIGHT);
         setUndecorated(true);
 
@@ -110,6 +112,13 @@ public class SendFrame extends JFrame{
         fileInfoLbl.setBounds(25,80,ScreenSize.FRAME_WIDTH - 50,20);
         panel.add(fileInfoLbl);
 
+        //show times
+        times = new JLabel();
+        times.setForeground(Color.white);
+        times.setHorizontalAlignment(SwingConstants.CENTER);
+        times.setBounds(ScreenSize.FRAME_WIDTH - 175,80,75,20);
+        panel.add(times);
+
         //file info textares
         fileInfoTxa = new TextArea("",0,0,TextArea.SCROLLBARS_BOTH);
         fileInfoTxa.setFont(new Font("",Font.PLAIN,10));
@@ -139,6 +148,14 @@ public class SendFrame extends JFrame{
     }
 
     private void events() {
+        //window close
+        sendFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                confirmExit();
+            }
+        });
+
         //close operation
         closeBtn.addMouseListener(new MouseAdapter() {
             @Override
@@ -215,9 +232,14 @@ public class SendFrame extends JFrame{
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        getIP();
-                        isSending = true;
-                        Send.start();
+                        if (chsFile == null){
+                            JOptionPane.showMessageDialog(sendFrame,"Please Choose Your File First!","Warning",JOptionPane.WARNING_MESSAGE);
+                        } else {
+                            getIP();
+                            isSending = true;
+                            countTime();
+                            Send.start();
+                        }
                     }
                 }).start();
             }
@@ -227,22 +249,42 @@ public class SendFrame extends JFrame{
         cancelBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (isSending){
-                    Object[] options = { "OK", "CANCEL" };
-                    int status = JOptionPane.showOptionDialog(sendFrame, "Click OK to Continue",
-                            "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                            null, options, options[0]);
-                    //user select value 0 = OK , 1 = Cancel
-                    if (status == 0){
-                        System.exit(1);
-                        Send.end();
-                    }
-                } else {
-                    Send.end();
-                    System.exit(0);
-                }
+                confirmExit();
             }
         });
+    }
+
+    private void confirmExit() {
+        if (isSending){
+            Object[] options = { "OK", "CANCEL" };
+            int status = JOptionPane.showOptionDialog(sendFrame, "Click OK to Continue",
+                    "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                    null, options, options[0]);
+            //user select value 0 = OK , 1 = Cancel
+            if (status == 0){
+                System.exit(1);
+                Send.end();
+            }
+        } else {
+            System.exit(0);
+        }
+    }
+
+    private void countTime() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (isSending){
+                    try{
+                        times.setText(time+" S");
+                        time++;
+                        Thread.sleep(1000);
+                    }catch (InterruptedException i){
+                        i.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     private void getIP() {
@@ -266,7 +308,6 @@ public class SendFrame extends JFrame{
             fileInfoLbl.setText("File Not Found");
         } else {
             String[] name = chsFile.getName().split("\\.");
-            fileInfoLbl.setText(chsFile.getAbsolutePath()+";");
             fileInfoTxa.setText("File Name: "+chsFile.getName()+"\n");
             fileInfoTxa.append("Expanded-name: "+name[name.length-1]+"\n");
             long len = chsFile.length();
