@@ -34,12 +34,18 @@ public class Send {
 
             //to receive confirm messege from a reveiver
             confirmSocket = new DatagramSocket(13142);
-            confirmPacket = new DatagramPacket(buffer,buffer.length);
+            confirmPacket = new DatagramPacket(buffer,0,buffer.length);
 
             //sent src file name
-            new DatagramSocket().send(new DatagramPacket(srcfile.getName().getBytes(),10240,
+            new DatagramSocket().send(new DatagramPacket(srcfile.getName().getBytes(),srcfile.getName().getBytes().length,
                     InetAddress.getByName("255.255.255.255"),13141));
-
+            while (true){
+                DatagramPacket tmpPacket = new DatagramPacket(new byte[1024],0,1024);
+                new DatagramSocket(13143).receive(tmpPacket);
+                if (tmpPacket.getLength() > 0){
+                    break;
+                }
+            }
             //begain to sent the src file
             while ((len = fis.read(buffer)) != -1){
                 packet = new DatagramPacket(buffer,len, InetAddress.getByName(ipStr),13141);

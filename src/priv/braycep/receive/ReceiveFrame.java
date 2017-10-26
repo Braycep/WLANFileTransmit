@@ -59,6 +59,7 @@ public class ReceiveFrame extends JFrame{
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(FrameSolution.FRAME_X, FrameSolution.FRAME_Y, FrameSolution.FRAME_WIDTH, FrameSolution.FRAME_HEIGHT);
         setUndecorated(true);
+        setAlwaysOnTop(true);
 
         //0,150,136
         panel = new JPanel(null);
@@ -253,12 +254,28 @@ public class ReceiveFrame extends JFrame{
                         if (chsFile == null){
                             JOptionPane.showMessageDialog(receiveFrame,"Please Choose Your Download Location First!","Warning",JOptionPane.WARNING_MESSAGE);
                         } else {
+                            submitBtn.setVisible(false);
+                            submitBtn.setText("Waiting");
                             Receive.start(chsFile);
                         }
                     }
                 }).start();
             }
         });
+        submitBtn.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isReceiving) {
+                    submitBtn.setVisible(false);
+                    submitBtn.setText("Receiving");
+                }
+                if (Receive.isIsEnd()){
+                    submitBtn.setVisible(true);
+                    submitBtn.setText("Submit");
+                }
+            }
+        });
+
 
         //cancel
         cancelBtn.addMouseListener(new MouseAdapter() {

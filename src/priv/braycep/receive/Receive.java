@@ -20,6 +20,14 @@ public class Receive {
     private static String trgFileName;
     private static File trgFile;
 
+    //flag
+    private static boolean isEnd = true;
+
+    //getter
+    protected static boolean isIsEnd(){
+        return isEnd;
+    }
+
     //start with download location
     public static void start(File dir){
         try{
@@ -30,14 +38,15 @@ public class Receive {
                 if (packetBegain.getLength() > 0){
                     trgFileName = new String(packetBegain.getData(),0,packetBegain.getLength());
                     socketBegain.close();
+                    isEnd = false;
                     packetBegain = null;
                     socketBegain = null;
                     break;
                 }
             }
             //reply
-            new DatagramSocket().send(new DatagramPacket("Received File Name".getBytes(),10240,
-                    InetAddress.getByName("255.255.255.255"),13142));
+            new DatagramSocket().send(new DatagramPacket("Received File Name".getBytes(),"Received File Name".getBytes().length,
+                    InetAddress.getByName("255.255.255.255"),13143));
 
             //receive data
             trgFile = new File(dir,trgFileName);
@@ -45,7 +54,7 @@ public class Receive {
             int len;
             byte[] buf = new byte[32768];
             socket = new DatagramSocket(13141);
-            packet = new DatagramPacket(buf,buf.length);
+            packet = new DatagramPacket(buf,0,buf.length);
             socket.receive(packet);
             ReceiveFrame.setIsReceiving(true);
             while ((len = packet.getLength()) > 0) {
@@ -60,6 +69,7 @@ public class Receive {
             ReceiveFrame.appendFileInfo("File Location: "+trgFile.getAbsolutePath()+"\n");
             ReceiveFrame.appendFileInfo("Received Over.\n");
             ReceiveFrame.setIsReceiving(false);
+            isEnd = true;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

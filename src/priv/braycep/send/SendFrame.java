@@ -66,6 +66,7 @@ public class SendFrame extends JFrame{
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(FrameSolution.FRAME_X, FrameSolution.FRAME_Y, FrameSolution.FRAME_WIDTH, FrameSolution.FRAME_HEIGHT);
         setUndecorated(true);
+        setAlwaysOnTop(true);
 
         //0,150,136
         panel = new JPanel(null);
