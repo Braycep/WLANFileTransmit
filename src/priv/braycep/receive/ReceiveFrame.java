@@ -1,4 +1,4 @@
-package priv.braycep;
+package priv.braycep.receive;
 
 import javax.swing.*;
 import java.awt.*;
