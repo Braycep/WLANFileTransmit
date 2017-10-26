@@ -31,15 +31,19 @@ public class ReceiveFrame extends JFrame{
 
     //flags
     private static boolean mousePressed = true;
-    private static boolean isSending = false;
+    private static boolean isReceiving = false;
 
     //other value
     private static int time = 0;
 
+    //getter&setter
+
+    //main
     public static void main(String[] args) {
         new ReceiveFrame().setVisible(true);
     }
 
+    //contractor
     public ReceiveFrame(){
         receiveFrame = this;
         setTitle("Wlan File Receiver v1.0");
@@ -138,30 +142,6 @@ public class ReceiveFrame extends JFrame{
         panel.add(cancelBtn);
     }
 
-    private String myIP() {
-        String ip = null;
-        try {
-            Process process = Runtime.getRuntime().exec("ipconfig");
-            String line = null;
-            String[] result = null;
-            InputStream bis = process.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(bis));
-            while ((line = br.readLine()) != null){
-                if (line.contains("IPv4")){
-                    result = line.split("\\:");
-                }
-            }
-            if (result != null){
-                ip = result[result.length - 1].trim();
-            } else {
-                JOptionPane.showMessageDialog(receiveFrame,"Network Unreachable!");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return ip;
-    }
-
     //events
     private void events() {
         //window close
@@ -231,15 +211,18 @@ public class ReceiveFrame extends JFrame{
                 jFileChooser = new JFileChooser("D:\\");
                 jFileChooser.setFileSelectionMode(JFileChooser.SAVE_DIALOG);
                 if (Locale.getDefault().getLanguage().toLowerCase().equals("zh")){
+                    jFileChooser.setDialogTitle("保存到: ");
                     jFileChooser.showDialog(new JLabel(),"选择");
                 }else{
-                    jFileChooser.showDialog(new JLabel(),"Choose");
+                    jFileChooser.setDialogTitle("Download Location: ");
+                    jFileChooser.showDialog(new JLabel(),"Submit");
                 }
                 //user can find directory only
                 if (!jFileChooser.getSelectedFile().canWrite()) {
                     JOptionPane.showMessageDialog(receiveFrame,"This Location Can't Be Write!");
                 } else {
-                    showChsFile(jFileChooser.getSelectedFile());
+                    chsFile = jFileChooser.getSelectedFile();
+                    showChsFile(chsFile);
                 }
             }
         });
@@ -252,12 +235,9 @@ public class ReceiveFrame extends JFrame{
                     @Override
                     public void run() {
                         if (chsFile == null){
-                            JOptionPane.showMessageDialog(receiveFrame,"Please Choose Your File First!","Warning",JOptionPane.WARNING_MESSAGE);
+                            JOptionPane.showMessageDialog(receiveFrame,"Please Choose Your Download Location First!","Warning",JOptionPane.WARNING_MESSAGE);
                         } else {
-                            getIP();
-                            isSending = true;
-                            countTime();
-                            Send.start();
+                            System.out.println("Receiving");
                         }
                     }
                 }).start();
@@ -273,8 +253,32 @@ public class ReceiveFrame extends JFrame{
         });
     }
 
+    private String myIP() {
+        String ip = null;
+        try {
+            Process process = Runtime.getRuntime().exec("ipconfig");
+            String line = null;
+            String[] result = null;
+            InputStream bis = process.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(bis));
+            while ((line = br.readLine()) != null){
+                if (line.contains("IPv4")){
+                    result = line.split("\\:");
+                }
+            }
+            if (result != null){
+                ip = result[result.length - 1].trim();
+            } else {
+                JOptionPane.showMessageDialog(receiveFrame,"Network Unreachable!");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ip;
+    }
+
     private void confirmExit() {
-        if (isSending){
+        if (isReceiving){
             Object[] options = { "OK", "CANCEL" };
             int status = JOptionPane.showOptionDialog(receiveFrame, "Click OK to Continue",
                     "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
@@ -293,7 +297,7 @@ public class ReceiveFrame extends JFrame{
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (isSending){
+                while (isReceiving){
                     try{
                         times.setText(time+" S");
                         time++;
@@ -304,22 +308,6 @@ public class ReceiveFrame extends JFrame{
                 }
             }
         }).start();
-    }
-
-    private void getIP() {
-        String[] ip = desIPTxf.getText().split("\\.");
-        try{
-            for(int i = 0;i<ips.length;i++){
-                ips[i] = Integer.parseInt(ip[i]);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        for(int i:ips){
-            if (i < 0 || i > 255){
-                JOptionPane.showMessageDialog(receiveFrame, "IP Address Incorrect!", "Warning", JOptionPane.ERROR_MESSAGE);
-            }
-        }
     }
 
     private void showChsFile(File chsFile) {

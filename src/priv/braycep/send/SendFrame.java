@@ -230,8 +230,10 @@ public class SendFrame extends JFrame{
                 //if not chosen jFileChooser return null
                 if (jFileChooser.getSelectedFile().isDirectory()){
                     JOptionPane.showMessageDialog(sendFrame,"You Have Selected a Directory,Please Select a File!");
+                } else {
+                    chsFile = jFileChooser.getSelectedFile();
+                    showChsFile(chsFile);
                 }
-                showChsFile(chsFile);
             }
         });
 
@@ -293,6 +295,7 @@ public class SendFrame extends JFrame{
                         i.printStackTrace();
                     }
                 }
+                fileInfoTxa.append("Total Used: "+time+" S\n");
             }
         }).start();
     }

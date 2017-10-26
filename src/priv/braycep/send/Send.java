@@ -42,7 +42,8 @@ public class Send {
             //send last one message
             packet = new DatagramPacket(buffer,0,InetAddress.getByName(ipStr),13141);
             socket.send(packet);
-            SendFrame.appendSentMsg(srcfile.getName()+" Sent Over.");
+            SendFrame.appendSentMsg(srcfile.getName()+" Sent Over.\n");
+            SendFrame.setIsSending(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,6 +60,5 @@ public class Send {
         }
         socket.close();
         confirmSocket.close();
-        SendFrame.setIsSending(false);
     }
 }
