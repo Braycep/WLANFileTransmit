@@ -1,3 +1,5 @@
+package priv.braycep;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -31,6 +33,10 @@ public class SendFrame extends JFrame{
     //other value
     private static int time = 0;
 
+    public static JFrame getSendFrame(){
+        return sendFrame;
+    }
+
     public static File getChsFile(){
         return chsFile;
     }
@@ -44,7 +50,7 @@ public class SendFrame extends JFrame{
     }
 
     public static void appendSentMsg(String msg){
-        fileInfoTxa.append("Send Status :"+msg);
+        fileInfoTxa.append("priv.braycep.Send Status :"+msg);
     }
 
     public static void main(String[] args) {
@@ -53,10 +59,10 @@ public class SendFrame extends JFrame{
 
     public SendFrame(){
         sendFrame = this;
-        setTitle("SendFrame v1.0");
+        setTitle("priv.braycep.SendFrame v1.0");
         setLayout(new BorderLayout());
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(ScreenSize.FRAME_X,ScreenSize.FRAME_Y,ScreenSize.FRAME_WIDTH,ScreenSize.FRAME_HEIGHT);
+        setBounds(FrameSolution.FRAME_X, FrameSolution.FRAME_Y, FrameSolution.FRAME_WIDTH, FrameSolution.FRAME_HEIGHT);
         setUndecorated(true);
 
         //0,150,136
@@ -77,14 +83,14 @@ public class SendFrame extends JFrame{
         closeBtn.setBackground(new Color(0,150,136));
         closeBtn.setFont(new Font("",Font.PLAIN,5));
         closeBtn.setBorder(new LineBorder(new Color(0,150,136)));
-        closeBtn.setBounds(ScreenSize.FRAME_WIDTH-20,0,20,20);
+        closeBtn.setBounds(FrameSolution.FRAME_WIDTH-20,0,20,20);
         panel.add(closeBtn);
 
         //ip tips
         ipLbl = new JLabel("Target IP Address :");
         ipLbl.setForeground(Color.white);
         ipLbl.setFont(new Font("",Font.BOLD,15));
-        ipLbl.setBounds(25,20,ScreenSize.FRAME_WIDTH - 50,20);
+        ipLbl.setBounds(25,20, FrameSolution.FRAME_WIDTH - 50,20);
         panel.add(ipLbl);
 
         //input des ip
@@ -93,7 +99,7 @@ public class SendFrame extends JFrame{
         desIPTxf.setBackground(Color.white);
         desIPTxf.setForeground(Color.black);
         desIPTxf.setHorizontalAlignment(SwingConstants.CENTER);
-        desIPTxf.setBounds(25,50,ScreenSize.FRAME_WIDTH - 50,20);
+        desIPTxf.setBounds(25,50, FrameSolution.FRAME_WIDTH - 50,20);
         desIPTxf.setBorder(new LineBorder(new Color(100,100,100)));
         panel.add(desIPTxf);
 
@@ -102,21 +108,21 @@ public class SendFrame extends JFrame{
         chsFileBtn.setBackground(Color.white);
         chsFileBtn.setFont(new Font("",Font.PLAIN,15));
         chsFileBtn.setBorder(new LineBorder(new Color(100,100,100)));
-        chsFileBtn.setBounds(ScreenSize.FRAME_WIDTH - 100,80,75,20);
+        chsFileBtn.setBounds(FrameSolution.FRAME_WIDTH - 100,80,75,20);
         panel.add(chsFileBtn);
 
         //file info label
         fileInfoLbl = new JLabel("Your File :");
         fileInfoLbl.setFont(new Font("",Font.BOLD,15));
         fileInfoLbl.setForeground(Color.white);
-        fileInfoLbl.setBounds(25,80,ScreenSize.FRAME_WIDTH - 50,20);
+        fileInfoLbl.setBounds(25,80, FrameSolution.FRAME_WIDTH - 50,20);
         panel.add(fileInfoLbl);
 
         //show times
         times = new JLabel();
         times.setForeground(Color.white);
         times.setHorizontalAlignment(SwingConstants.CENTER);
-        times.setBounds(ScreenSize.FRAME_WIDTH - 175,80,75,20);
+        times.setBounds(FrameSolution.FRAME_WIDTH - 175,80,75,20);
         panel.add(times);
 
         //file info textares
@@ -124,7 +130,7 @@ public class SendFrame extends JFrame{
         fileInfoTxa.setFont(new Font("",Font.PLAIN,10));
         fileInfoTxa.setBackground(Color.white);
         fileInfoTxa.setForeground(Color.black);
-        fileInfoTxa.setBounds(25,110,ScreenSize.FRAME_WIDTH - 50,105);
+        fileInfoTxa.setBounds(25,110, FrameSolution.FRAME_WIDTH - 50,105);
         fileInfoTxa.setEditable(false);
         panel.add(fileInfoTxa);
 
@@ -134,7 +140,7 @@ public class SendFrame extends JFrame{
         submitBtn.setHorizontalAlignment(SwingConstants.CENTER);
         submitBtn.setBackground(Color.white);
         submitBtn.setBorder(new LineBorder(new Color(100,100,100)));
-        submitBtn.setBounds(25,ScreenSize.FRAME_HEIGHT - 28,75,20);
+        submitBtn.setBounds(25, FrameSolution.FRAME_HEIGHT - 28,75,20);
         panel.add(submitBtn);
 
         //cancel button
@@ -143,7 +149,7 @@ public class SendFrame extends JFrame{
         cancelBtn.setHorizontalAlignment(SwingConstants.CENTER);
         cancelBtn.setBackground(Color.white);
         cancelBtn.setBorder(new LineBorder(new Color(100,100,100)));
-        cancelBtn.setBounds(ScreenSize.FRAME_WIDTH - 100,ScreenSize.FRAME_HEIGHT - 28,75,20);
+        cancelBtn.setBounds(FrameSolution.FRAME_WIDTH - 100, FrameSolution.FRAME_HEIGHT - 28,75,20);
         panel.add(cancelBtn);
     }
 
