@@ -101,7 +101,7 @@ public class ReceiveFrame extends JFrame{
         panel.add(chsFileBtn);
 
         //file info label
-        fileInfoLbl = new JLabel("Your File :");
+        fileInfoLbl = new JLabel("Your Directory :");
         fileInfoLbl.setFont(new Font("",Font.BOLD,15));
         fileInfoLbl.setForeground(Color.white);
         fileInfoLbl.setBounds(25,80, FrameSolution.FRAME_WIDTH - 50,20);
@@ -218,11 +218,15 @@ public class ReceiveFrame extends JFrame{
                     jFileChooser.showDialog(new JLabel(),"Submit");
                 }
                 //user can find directory only
-                if (!jFileChooser.getSelectedFile().canWrite()) {
-                    JOptionPane.showMessageDialog(receiveFrame,"This Location Can't Be Write!");
+                if (jFileChooser.getSelectedFile() == null) {
+                    JOptionPane.showMessageDialog(receiveFrame,"You Haven't Selected a File!");
                 } else {
-                    chsFile = jFileChooser.getSelectedFile();
-                    showChsFile(chsFile);
+                    if (!jFileChooser.getSelectedFile().canWrite()) {
+                        JOptionPane.showMessageDialog(receiveFrame,"This Location Can't Be Write!");
+                    } else {
+                        chsFile = jFileChooser.getSelectedFile();
+                        showChsFile(chsFile);
+                    }
                 }
             }
         });
@@ -253,6 +257,10 @@ public class ReceiveFrame extends JFrame{
         });
     }
 
+    /**
+     * get self ip address
+     * @return return Self host IP (IPv4)
+     */
     private String myIP() {
         String ip = null;
         try {
@@ -277,6 +285,9 @@ public class ReceiveFrame extends JFrame{
         return ip;
     }
 
+    /**
+     * for confirm your exit option
+     */
     private void confirmExit() {
         if (isReceiving){
             Object[] options = { "OK", "CANCEL" };
@@ -293,6 +304,9 @@ public class ReceiveFrame extends JFrame{
         }
     }
 
+    /**
+     * count time when transmiting
+     */
     private void countTime() {
         new Thread(new Runnable() {
             @Override
@@ -310,6 +324,10 @@ public class ReceiveFrame extends JFrame{
         }).start();
     }
 
+    /**
+     * to show the directory that you have chosen
+     * @param chsFile
+     */
     private void showChsFile(File chsFile) {
         if (chsFile == null){
             JOptionPane.showMessageDialog(receiveFrame,"You Haven't Selected a Directory!","Warning",JOptionPane.WARNING_MESSAGE);

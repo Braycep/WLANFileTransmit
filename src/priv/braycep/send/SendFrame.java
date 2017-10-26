@@ -292,9 +292,9 @@ public class SendFrame extends JFrame{
             public void run() {
                 while (isSending){
                     try{
-                        times.setText(time+" S");
-                        time++;
                         Thread.sleep(1000);
+                        time++;
+                        times.setText(time+" S");
                     }catch (InterruptedException i){
                         i.printStackTrace();
                     }
