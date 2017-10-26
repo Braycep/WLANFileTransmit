@@ -132,7 +132,7 @@ public class SendFrame extends JFrame{
         fileInfoTxa.setFont(new Font("",Font.PLAIN,10));
         fileInfoTxa.setBackground(Color.white);
         fileInfoTxa.setForeground(Color.black);
-        fileInfoTxa.setBounds(25,110, FrameSolution.FRAME_WIDTH - 50,105);
+        fileInfoTxa.setBounds(25,110, FrameSolution.FRAME_WIDTH - 50,FrameSolution.FRAME_HEIGHT - 150);
         fileInfoTxa.setEditable(false);
         panel.add(fileInfoTxa);
 

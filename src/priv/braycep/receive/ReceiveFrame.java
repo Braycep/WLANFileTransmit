@@ -115,7 +115,7 @@ public class ReceiveFrame extends JFrame{
         fileInfoTxa.setFont(new Font("",Font.PLAIN,10));
         fileInfoTxa.setBackground(Color.white);
         fileInfoTxa.setForeground(Color.black);
-        fileInfoTxa.setBounds(25,110, FrameSolution.FRAME_WIDTH - 50,105);
+        fileInfoTxa.setBounds(25,110, FrameSolution.FRAME_WIDTH - 50,FrameSolution.FRAME_HEIGHT - 150);
         fileInfoTxa.setEditable(false);
         panel.add(fileInfoTxa);
 
@@ -229,17 +229,18 @@ public class ReceiveFrame extends JFrame{
             @Override
             public void mouseReleased(MouseEvent e) {
                 jFileChooser = new JFileChooser("D:\\");
-                jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                jFileChooser.setFileSelectionMode(JFileChooser.SAVE_DIALOG);
                 if (Locale.getDefault().getLanguage().toLowerCase().equals("zh")){
                     jFileChooser.showDialog(new JLabel(),"选择");
                 }else{
                     jFileChooser.showDialog(new JLabel(),"Choose");
                 }
-                //if not chosen jFileChooser return null
-                if (jFileChooser.getSelectedFile().isDirectory()){
-                    JOptionPane.showMessageDialog(receiveFrame,"You Have Selected a Directory,Please Select a File!");
+                //user can find directory only
+                if (!jFileChooser.getSelectedFile().canWrite()) {
+                    JOptionPane.showMessageDialog(receiveFrame,"This Location Can't Be Write!");
+                } else {
+                    showChsFile(jFileChooser.getSelectedFile());
                 }
-                showChsFile(chsFile);
             }
         });
 
@@ -323,23 +324,10 @@ public class ReceiveFrame extends JFrame{
 
     private void showChsFile(File chsFile) {
         if (chsFile == null){
-            fileInfoLbl.setText("File Not Found");
+            JOptionPane.showMessageDialog(receiveFrame,"You Haven't Selected a Directory!","Warning",JOptionPane.WARNING_MESSAGE);
+            fileInfoTxa.setText("");
         } else {
-            String[] name = chsFile.getName().split("\\.");
-            fileInfoTxa.setText("File Name: "+chsFile.getName()+"\n");
-            fileInfoTxa.append("Expanded-name: "+name[name.length-1]+"\n");
-            long len = chsFile.length();
-            if (len < 10240){
-                fileInfoTxa.append("Size: "+(chsFile.length())+" B\n");
-            }else if (len >= 10240 && len < 1024000) {
-                //10K~1000K
-                fileInfoTxa.append("Size: "+(chsFile.length()/1024)+" Kb\n");
-            }else if (len >= 1024000 && len < 102400000) {
-                fileInfoTxa.append("Size: "+(chsFile.length()/1024/1024)+" Mb\n");
-            }else {
-                fileInfoTxa.append("Size: "+(chsFile.length()/1024/1024/1024)+" Gb\n");
-            }
-            fileInfoTxa.append("Location: "+chsFile.getAbsolutePath()+"\n");
+            fileInfoTxa.setText("Download Location: "+chsFile.getAbsolutePath());
         }
     }
 }
