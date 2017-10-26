@@ -29,7 +29,6 @@ public class ReceiveFrame extends JFrame{
 
     //files
     protected static File chsFile;
-    protected static int[] ips = new int[4];
 
     //flags
     private static boolean mousePressed = true;
@@ -39,6 +38,13 @@ public class ReceiveFrame extends JFrame{
     private static int time = 0;
 
     //getter&setter
+    protected static void appendFileInfo(String info){
+        fileInfoTxa.append(info);
+    }
+
+    protected static void setIsReceiving(boolean Receiving){
+        isReceiving = Receiving;
+    }
 
     //main
     public static void main(String[] args) {
@@ -139,7 +145,7 @@ public class ReceiveFrame extends JFrame{
         panel.add(submitBtn);
 
         //cancel button
-        cancelBtn = new JButton("Cancle");
+        cancelBtn = new JButton("Exit");
         cancelBtn.setFont(new Font("",Font.PLAIN,15));
         cancelBtn.setHorizontalAlignment(SwingConstants.CENTER);
         cancelBtn.setBackground(Color.white);
@@ -247,7 +253,7 @@ public class ReceiveFrame extends JFrame{
                         if (chsFile == null){
                             JOptionPane.showMessageDialog(receiveFrame,"Please Choose Your Download Location First!","Warning",JOptionPane.WARNING_MESSAGE);
                         } else {
-                            System.out.println("Receiving");
+                            Receive.start(chsFile);
                         }
                     }
                 }).start();
@@ -324,13 +330,14 @@ public class ReceiveFrame extends JFrame{
             public void run() {
                 while (isReceiving){
                     try{
-                        times.setText(time+" S");
-                        time++;
                         Thread.sleep(1000);
+                        time++;
+                        times.setText(time+" S");
                     }catch (InterruptedException i){
                         i.printStackTrace();
                     }
                 }
+                fileInfoTxa.append("Total Used: "+time+" S\n");
             }
         }).start();
     }

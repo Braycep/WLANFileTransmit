@@ -36,6 +36,10 @@ public class Send {
             confirmSocket = new DatagramSocket(13142);
             confirmPacket = new DatagramPacket(buffer,buffer.length);
 
+            //sent src file name
+            new DatagramSocket().send(new DatagramPacket(srcfile.getName().getBytes(),10240,
+                    InetAddress.getByName("255.255.255.255"),13141));
+
             //begain to sent the src file
             while ((len = fis.read(buffer)) != -1){
                 packet = new DatagramPacket(buffer,len, InetAddress.getByName(ipStr),13141);
