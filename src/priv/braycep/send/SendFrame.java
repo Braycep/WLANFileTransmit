@@ -228,11 +228,15 @@ public class SendFrame extends JFrame{
                     jFileChooser.showDialog(new JLabel(),"Choose");
                 }
                 //if not chosen jFileChooser return null
-                if (jFileChooser.getSelectedFile().isDirectory()){
-                    JOptionPane.showMessageDialog(sendFrame,"You Have Selected a Directory,Please Select a File!");
+                if (jFileChooser.getSelectedFile() == null){
+                    JOptionPane.showMessageDialog(sendFrame,"You Haven't Selected a File!","Warning",JOptionPane.WARNING_MESSAGE);
                 } else {
-                    chsFile = jFileChooser.getSelectedFile();
-                    showChsFile(chsFile);
+                    if (jFileChooser.getSelectedFile().isDirectory()){
+                        JOptionPane.showMessageDialog(sendFrame,"You Have Selected a Directory,Please Select a File Instead!");
+                    } else {
+                        chsFile = jFileChooser.getSelectedFile();
+                        showChsFile(chsFile);
+                    }
                 }
             }
         });

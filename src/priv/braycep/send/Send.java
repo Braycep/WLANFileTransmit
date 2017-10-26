@@ -21,17 +21,26 @@ public class Send {
 
     public static void start(){
         try {
+            //get Target IP
+            ip = SendFrame.getIps();
+            ipStr = ip[0]+"."+ip[1]+"."+ip[2]+"."+ip[3];
+
+            //get src File
             srcfile = SendFrame.getChsFile();
             fis = new FileInputStream(srcfile);
             socket = new DatagramSocket();
             int len;
             byte[] buffer = new byte[32768];
-            //receive confirm messege
+
+            //to receive confirm messege from a reveiver
             confirmSocket = new DatagramSocket(13142);
             confirmPacket = new DatagramPacket(buffer,buffer.length);
+
+            //begain to sent the src file
             while ((len = fis.read(buffer)) != -1){
                 packet = new DatagramPacket(buffer,len, InetAddress.getByName(ipStr),13141);
                 socket.send(packet);
+                //get target's reply message
                 while(true){
                     confirmSocket.receive(confirmPacket);
                     if(confirmPacket.getLength() == 1){
@@ -39,7 +48,8 @@ public class Send {
                     }
                 }
             }
-            //send last one message
+
+            //send the lastest message
             packet = new DatagramPacket(buffer,0,InetAddress.getByName(ipStr),13141);
             socket.send(packet);
             SendFrame.appendSentMsg(srcfile.getName()+" Sent Over.\n");
@@ -55,7 +65,7 @@ public class Send {
             try{
                 fis.close();
             }catch (Exception e){
-
+                System.err.println("FileInputStream fis Close Error!");
             }
         }
         socket.close();
