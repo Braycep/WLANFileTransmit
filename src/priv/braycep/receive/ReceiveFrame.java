@@ -39,8 +39,10 @@ public class ReceiveFrame extends JFrame{
 
     //getter&setter
     protected static void appendFileInfo(String info){
-        fileInfoTxa.append(info);
+        fileInfoTxa.append(info+"\n");
     }
+
+    protected static void setSubmitBtnText(String msg){ submitBtn.setText(msg); }
 
     protected static void setIsReceiving(boolean Receiving){
         isReceiving = Receiving;
@@ -216,28 +218,30 @@ public class ReceiveFrame extends JFrame{
             }
         });
 
-        //choose file
+        //choose dir
         chsFileBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                jFileChooser = new JFileChooser("D:\\");
-                jFileChooser.setFileSelectionMode(JFileChooser.SAVE_DIALOG);
-                if (Locale.getDefault().getLanguage().toLowerCase().equals("zh")){
-                    jFileChooser.setDialogTitle("保存到: ");
-                    jFileChooser.showDialog(new JLabel(),"选择");
-                }else{
-                    jFileChooser.setDialogTitle("Download Location: ");
-                    jFileChooser.showDialog(new JLabel(),"Submit");
-                }
-                //user can find directory only
-                if (jFileChooser.getSelectedFile() == null) {
-                    JOptionPane.showMessageDialog(receiveFrame,"You Haven't Selected a File!","Warning",JOptionPane.WARNING_MESSAGE);
-                } else {
-                    if (!jFileChooser.getSelectedFile().canWrite()) {
-                        JOptionPane.showMessageDialog(receiveFrame,"This Location Can't Be Write!");
+                if (chsFileBtn.isEnabled()) {
+                    jFileChooser = new JFileChooser("D:\\");
+                    jFileChooser.setFileSelectionMode(JFileChooser.SAVE_DIALOG);
+                    if (Locale.getDefault().getLanguage().toLowerCase().equals("zh")){
+                        jFileChooser.setDialogTitle("保存到: ");
+                        jFileChooser.showDialog(new JLabel(),"选择");
+                    }else{
+                        jFileChooser.setDialogTitle("Download Location: ");
+                        jFileChooser.showDialog(new JLabel(),"Submit");
+                    }
+                    //user can find directory only
+                    if (jFileChooser.getSelectedFile() == null) {
+                        JOptionPane.showMessageDialog(receiveFrame,"You Haven't Selected a File!","Warning",JOptionPane.WARNING_MESSAGE);
                     } else {
-                        chsFile = jFileChooser.getSelectedFile();
-                        showChsFile(chsFile);
+                        if (!jFileChooser.getSelectedFile().canWrite()) {
+                            JOptionPane.showMessageDialog(receiveFrame,"This Location Can't Be Write!");
+                        } else {
+                            chsFile = jFileChooser.getSelectedFile();
+                            showChsFile(chsFile);
+                        }
                     }
                 }
             }
@@ -247,30 +251,20 @@ public class ReceiveFrame extends JFrame{
         submitBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (chsFile == null){
-                            JOptionPane.showMessageDialog(receiveFrame,"Please Choose Your Download Location First!","Warning",JOptionPane.WARNING_MESSAGE);
-                        } else {
-                            submitBtn.setVisible(false);
-                            submitBtn.setText("Waiting");
-                            Receive.start(chsFile);
+                if (submitBtn.isEnabled()){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (chsFile == null){
+                                JOptionPane.showMessageDialog(receiveFrame,"Please Choose Your Download Location First!","Warning",JOptionPane.WARNING_MESSAGE);
+                            } else {
+                                submitBtn.setEnabled(false);
+                                chsFileBtn.setEnabled(false);
+                                submitBtn.setText("Waiting");
+                                Receive.start(chsFile);
+                            }
                         }
-                    }
-                }).start();
-            }
-        });
-        submitBtn.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isReceiving) {
-                    submitBtn.setVisible(false);
-                    submitBtn.setText("Receiving");
-                }
-                if (Receive.isIsEnd()){
-                    submitBtn.setVisible(true);
-                    submitBtn.setText("Submit");
+                    }).start();
                 }
             }
         });
@@ -340,7 +334,7 @@ public class ReceiveFrame extends JFrame{
     /**
      * count time when transmiting
      */
-    private void countTime() {
+    protected static  void countTime() {
         new Thread(new Runnable() {
             @Override
             public void run() {

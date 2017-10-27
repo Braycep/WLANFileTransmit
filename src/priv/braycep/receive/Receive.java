@@ -44,25 +44,38 @@ public class Receive {
                     break;
                 }
             }
+            ReceiveFrame.appendFileInfo("\nReceving: "+trgFileName);
+
             //reply
             new DatagramSocket().send(new DatagramPacket("Received File Name".getBytes(),"Received File Name".getBytes().length,
                     InetAddress.getByName("255.255.255.255"),13143));
 
-            //receive data
+            //prepare to receive data
             trgFile = new File(dir,trgFileName);
+            if (trgFile.exists()) {
+                trgFile.delete();
+            }
             fos = new FileOutputStream(trgFile);
             int len;
             byte[] buf = new byte[32768];
             socket = new DatagramSocket(13141);
             packet = new DatagramPacket(buf,0,buf.length);
-            socket.receive(packet);
             ReceiveFrame.setIsReceiving(true);
+            ReceiveFrame.countTime();
+            ReceiveFrame.setSubmitBtnText("Receiving");
+
+            //receiving
+            socket.receive(packet);
             while ((len = packet.getLength()) > 0) {
                 fos.write(buf,0,len);
-                new DatagramSocket().send(new DatagramPacket("Reply".getBytes(),1,
-                        InetAddress.getByName("255.255.255.255"),13142));
+                fos.flush();
+                while (true) {
+                    new DatagramSocket().send(new DatagramPacket("Reply".getBytes(),1,
+                            InetAddress.getByName("255.255.255.255"),13142));
+                    socket.receive(packet);
+                    break;
+                }
             }
-            fos.flush();
 
             //append msg
             ReceiveFrame.appendFileInfo("Download File: "+trgFile.getName()+"\n");

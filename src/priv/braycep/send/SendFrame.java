@@ -52,6 +52,10 @@ public class SendFrame extends JFrame{
         isSending = Sending;
     }
 
+    protected static void setSubmitBtnText(String msg){
+        submitBtn.setText(msg);
+    }
+
     public static void appendSentMsg(String msg){
         fileInfoTxa.append("Status :"+msg);
     }

@@ -39,13 +39,24 @@ public class Send {
             //sent src file name
             new DatagramSocket().send(new DatagramPacket(srcfile.getName().getBytes(),srcfile.getName().getBytes().length,
                     InetAddress.getByName("255.255.255.255"),13141));
+
+            //ensure sent file name
             while (true){
                 DatagramPacket tmpPacket = new DatagramPacket(new byte[1024],0,1024);
                 new DatagramSocket(13143).receive(tmpPacket);
                 if (tmpPacket.getLength() > 0){
+                    SendFrame.appendSentMsg("Sent File Name.\n");
                     break;
                 }
             }
+
+            //waiting for receiver
+            try{
+                Thread.sleep(10);
+            }catch (InterruptedException i){
+                i.printStackTrace();
+            }
+            SendFrame.setSubmitBtnText("Sending");
             //begain to sent the src file
             while ((len = fis.read(buffer)) != -1){
                 packet = new DatagramPacket(buffer,len, InetAddress.getByName(ipStr),13141);
@@ -60,7 +71,7 @@ public class Send {
             }
 
             //send the lastest message
-            packet = new DatagramPacket(buffer,0,InetAddress.getByName(ipStr),13141);
+            packet = new DatagramPacket(new byte[1024],0,InetAddress.getByName(ipStr),13141);
             socket.send(packet);
             SendFrame.appendSentMsg(srcfile.getName()+" Sent Over.\n");
             SendFrame.setIsSending(false);
