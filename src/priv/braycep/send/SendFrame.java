@@ -221,22 +221,24 @@ public class SendFrame extends JFrame{
         chsFileBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                jFileChooser = new JFileChooser("D:\\");
-                jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                if (Locale.getDefault().getLanguage().toLowerCase().equals("zh")){
-                    jFileChooser.showDialog(new JLabel(),"选择");
-                }else{
-                    jFileChooser.showDialog(new JLabel(),"Choose");
-                }
-                //if not chosen jFileChooser return null
-                if (jFileChooser.getSelectedFile() == null){
-                    JOptionPane.showMessageDialog(sendFrame,"You Haven't Selected a File!","Warning",JOptionPane.WARNING_MESSAGE);
-                } else {
-                    if (jFileChooser.getSelectedFile().isDirectory()){
-                        JOptionPane.showMessageDialog(sendFrame,"You Have Selected a Directory,Please Select a File Instead!");
+                if (chsFileBtn.isEnabled()){
+                    jFileChooser = new JFileChooser("D:\\");
+                    jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                    if (Locale.getDefault().getLanguage().toLowerCase().equals("zh")){
+                        jFileChooser.showDialog(new JLabel(),"选择");
+                    }else{
+                        jFileChooser.showDialog(new JLabel(),"Choose");
+                    }
+                    //if not chosen jFileChooser return null
+                    if (jFileChooser.getSelectedFile() == null){
+                        JOptionPane.showMessageDialog(sendFrame,"You Haven't Selected a File!","Warning",JOptionPane.WARNING_MESSAGE);
                     } else {
-                        chsFile = jFileChooser.getSelectedFile();
-                        showChsFile(chsFile);
+                        if (jFileChooser.getSelectedFile().isDirectory()){
+                            JOptionPane.showMessageDialog(sendFrame,"You Have Selected a Directory,Please Select a File Instead!");
+                        } else {
+                            chsFile = jFileChooser.getSelectedFile();
+                            showChsFile(chsFile);
+                        }
                     }
                 }
             }
@@ -246,27 +248,30 @@ public class SendFrame extends JFrame{
         submitBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (chsFile == null){
-                            JOptionPane.showMessageDialog(sendFrame,"Please Choose Your File First!","Warning",JOptionPane.WARNING_MESSAGE);
-                        } else {
-                            Object[] objects = new Object[]{"OK","Cancel"};
-                            int status = JOptionPane.showOptionDialog(sendFrame,"Make Sure the Receiver Is Waitting!","Warning",JOptionPane.OK_CANCEL_OPTION,
-                                    JOptionPane.WARNING_MESSAGE,null,objects,objects[1]);
-                            if (status == 0){
-                                submitBtnClicked = true;
-                                submitBtn.setVisible(false);
-                                //JOptionPane.showMessageDialog(sendFrame,"Make Sure the Receiver Is Waitting!","Warning",JOptionPane.WARNING_MESSAGE);
-                                getIP();
-                                isSending = true;
-                                countTime();
-                                Send.start();
+                if (submitBtn.isEnabled()){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (chsFile == null){
+                                JOptionPane.showMessageDialog(sendFrame,"Please Choose Your File First!","Warning",JOptionPane.WARNING_MESSAGE);
+                            } else {
+                                Object[] objects = new Object[]{"OK","Cancel"};
+                                int status = JOptionPane.showOptionDialog(sendFrame,"Make Sure the Receiver Is Waitting!","Warning",JOptionPane.OK_CANCEL_OPTION,
+                                        JOptionPane.WARNING_MESSAGE,null,objects,objects[1]);
+                                if (status == 0){
+                                    submitBtnClicked = true;
+                                    submitBtn.setEnabled(false);
+                                    chsFileBtn.setEnabled(false);
+                                    //JOptionPane.showMessageDialog(sendFrame,"Make Sure the Receiver Is Waitting!","Warning",JOptionPane.WARNING_MESSAGE);
+                                    getIP();
+                                    isSending = true;
+                                    countTime();
+                                    Send.start();
+                                }
                             }
                         }
-                    }
-                }).start();
+                    }).start();
+                }
             }
         });
 
