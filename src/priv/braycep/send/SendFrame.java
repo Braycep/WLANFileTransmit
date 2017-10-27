@@ -31,6 +31,7 @@ public class SendFrame extends JFrame{
     //flags
     private static boolean mousePressed = true;
     private static boolean isSending = false;
+    private static boolean submitBtnClicked = false;
 
     //other value
     private static int time = 0;
@@ -66,7 +67,6 @@ public class SendFrame extends JFrame{
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(FrameSolution.FRAME_X, FrameSolution.FRAME_Y, FrameSolution.FRAME_WIDTH, FrameSolution.FRAME_HEIGHT);
         setUndecorated(true);
-        setAlwaysOnTop(true);
 
         //0,150,136
         panel = new JPanel(null);
@@ -252,15 +252,24 @@ public class SendFrame extends JFrame{
                         if (chsFile == null){
                             JOptionPane.showMessageDialog(sendFrame,"Please Choose Your File First!","Warning",JOptionPane.WARNING_MESSAGE);
                         } else {
-                            getIP();
-                            isSending = true;
-                            countTime();
-                            Send.start();
+                            Object[] objects = new Object[]{"OK","Cancel"};
+                            int status = JOptionPane.showOptionDialog(sendFrame,"Make Sure the Receiver Is Waitting!","Warning",JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.WARNING_MESSAGE,null,objects,objects[1]);
+                            if (status == 0){
+                                submitBtnClicked = true;
+                                submitBtn.setVisible(false);
+                                //JOptionPane.showMessageDialog(sendFrame,"Make Sure the Receiver Is Waitting!","Warning",JOptionPane.WARNING_MESSAGE);
+                                getIP();
+                                isSending = true;
+                                countTime();
+                                Send.start();
+                            }
                         }
                     }
                 }).start();
             }
         });
+
 
         //cancel
         cancelBtn.addMouseListener(new MouseAdapter() {
