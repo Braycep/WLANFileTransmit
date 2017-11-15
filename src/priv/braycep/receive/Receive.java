@@ -1,5 +1,7 @@
 package priv.braycep.receive;
 
+import priv.braycep.shareds.SharedMethods;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,19 +10,19 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class Receive {
-    //Net
+    //网络
     private static DatagramSocket socketBegain;
     private static DatagramPacket packetBegain;
 
     private static DatagramPacket packet;
     private static DatagramSocket socket;
 
-    //file io
+    //文件
     private static FileOutputStream fos;
     private static String trgFileName;
-    private static File trgFile;
+    protected static File trgFile;
 
-    //flag
+    //标志
     private static boolean isEnd = true;
 
     //getter
@@ -28,7 +30,7 @@ public class Receive {
         return isEnd;
     }
 
-    //start with download location
+    //开始接收
     public static void start(File dir){
         try{
             socketBegain = new DatagramSocket(13141);
@@ -44,13 +46,19 @@ public class Receive {
                     break;
                 }
             }
-            ReceiveFrame.appendFileInfo("\nReceving: "+trgFileName);
 
-            //reply
+            //拆分文件名和文件大小
+            String[] fileName = trgFileName.split("\\?");
+            trgFileName = fileName[0];
+            ReceiveFrame.appendFileInfo("接收文件: "+trgFileName);
+            ReceiveFrame.fileSize = Integer.parseInt(fileName[1]);
+            ReceiveFrame.appendFileInfo("文件大小: "+SharedMethods.formatFileSize(Integer.parseInt(fileName[1])));
+
+            //返回收到文件名的确认信息
             new DatagramSocket().send(new DatagramPacket("Received File Name".getBytes(),"Received File Name".getBytes().length,
                     InetAddress.getByName("255.255.255.255"),13143));
 
-            //prepare to receive data
+            //准备接收文件数据
             trgFile = new File(dir,trgFileName);
             if (trgFile.exists()) {
                 trgFile.delete();
@@ -62,9 +70,25 @@ public class Receive {
             packet = new DatagramPacket(buf,0,buf.length);
             ReceiveFrame.setIsReceiving(true);
             ReceiveFrame.countTime();
-            ReceiveFrame.setSubmitBtnText("Receiving");
+            ReceiveFrame.setSubmitBtnText("接收中");
 
-            //receiving
+            //开启垃圾清理进程
+          new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println(ReceiveFrame.isReceiving());
+                    while (ReceiveFrame.isReceiving()) {
+                        try{
+                            Thread.sleep(1000);
+                            System.gc();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+
+            //开始接收
             socket.receive(packet);
             while ((len = packet.getLength()) > 0) {
                 fos.write(buf,0,len);
@@ -77,10 +101,10 @@ public class Receive {
                 }
             }
 
-            //append msg
-            ReceiveFrame.appendFileInfo("Download File: "+trgFile.getName()+"\n");
-            ReceiveFrame.appendFileInfo("File Location: "+trgFile.getAbsolutePath()+"\n");
-            ReceiveFrame.appendFileInfo("Received Over.\n");
+            //文件发送完毕提示信息
+            ReceiveFrame.appendFileInfo("接收的文件: "+trgFile.getName());
+            ReceiveFrame.appendFileInfo("文件的路径: "+trgFile.getAbsolutePath());
+            ReceiveFrame.appendFileInfo("接受完毕");
             ReceiveFrame.setIsReceiving(false);
             isEnd = true;
         } catch (Exception e) {
@@ -95,6 +119,10 @@ public class Receive {
                 }
             }
             socket.close();
+            socket = null;
+            packet = null;
+            socketBegain = null;
+            packetBegain = null;
         }
     }
 }

@@ -21,6 +21,7 @@ public class ReceiveFrame extends JFrame{
     private static JTextField desIPTxf;
     private static JLabel fileInfoLbl;
     private static JLabel times;
+    private static JLabel percent;
     private static TextArea fileInfoTxa;
     private static JButton closeBtn;
     private static JButton chsFileBtn;
@@ -48,6 +49,9 @@ public class ReceiveFrame extends JFrame{
 
     protected static void setIsReceiving(boolean Receiving){
         isReceiving = Receiving;
+    }
+    protected static boolean isReceiving(){
+        return isReceiving;
     }
 
     //main
@@ -147,6 +151,12 @@ public class ReceiveFrame extends JFrame{
         submitBtn.setBounds(25, FrameSolution.FRAME_HEIGHT - 28,75,20);
         panel.add(submitBtn);
 
+        percent = new JLabel("0.00%");
+        percent.setFont(new Font("",Font.BOLD,15));
+        percent.setForeground(Color.white);
+        percent.setBounds(FrameSolution.FRAME_WIDTH/2 - 30,FrameSolution.FRAME_HEIGHT-28,60,20);
+        panel.add(percent);
+
         //cancel button
         cancelBtn = new JButton("退出");
         cancelBtn.setFont(new Font("",Font.PLAIN,15));
@@ -230,9 +240,8 @@ public class ReceiveFrame extends JFrame{
                             if (chsFile == null){
                                 JOptionPane.showMessageDialog(receiveFrame,"请选择一个保存路径！","Warning",JOptionPane.WARNING_MESSAGE);
                             } else {
-                                submitBtn.setEnabled(false);
-                                chsFileBtn.setEnabled(false);
-                                submitBtn.setText("Waiting");
+                                SharedMethods.changeSubmitBtnStatus(submitBtn,chsFileBtn,false);
+                                submitBtn.setText("等待中");
                                 Receive.start(chsFile);
                             }
                         }
@@ -296,7 +305,6 @@ public class ReceiveFrame extends JFrame{
             //user select value 0 = OK , 1 = Cancel
             if (status == 0){
                 System.exit(1);
-                Send.end();
             }
         } else {
             System.exit(0);
@@ -315,11 +323,15 @@ public class ReceiveFrame extends JFrame{
                         Thread.sleep(1000);
                         time++;
                         times.setText(time+" S");
+                        percent.setText(SharedMethods.formatDoubleValue(Receive.trgFile.length(),(fileSize*0.01),2)+"%");
                     }catch (InterruptedException i){
                         i.printStackTrace();
                     }
                 }
                 fileInfoTxa.append("使用时间: "+time+" 秒\n");
+                percent.setText("100.0%");
+                SharedMethods.changeSubmitBtnStatus(submitBtn,chsFileBtn,true);
+                submitBtn.setText("确定");
             }
         }).start();
     }

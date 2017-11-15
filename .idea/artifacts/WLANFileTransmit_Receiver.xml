@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="WLANFileTransmit_Receiver">
-    <output-path>$PROJECT_DIR$/out/artifacts/WLANFileTransmit_Receiver</output-path>
-    <root id="archive" name="WLANFileTransmit_Receiver.jar">
-      <element id="module-output" name="WLANFileTransmit" />
-    </root>
-  </artifact>
-</component>
