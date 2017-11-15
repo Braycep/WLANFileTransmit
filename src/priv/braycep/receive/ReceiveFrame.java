@@ -2,6 +2,7 @@ package priv.braycep.receive;
 
 import priv.braycep.FrameSolution;
 import priv.braycep.send.Send;
+import priv.braycep.shareds.SharedMethods;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -13,7 +14,7 @@ import java.net.UnknownHostException;
 import java.util.Locale;
 
 public class ReceiveFrame extends JFrame{
-    //containers
+    //组件
     private static JFrame receiveFrame;
     private static JPanel panel;
     private static JLabel ipLbl;
@@ -27,10 +28,11 @@ public class ReceiveFrame extends JFrame{
     private static JButton cancelBtn;
     private static JFileChooser jFileChooser;
 
-    //files
+    //文件
     protected static File chsFile;
+    protected static long fileSize = 0;
 
-    //flags
+    //标志
     private static boolean mousePressed = true;
     private static boolean isReceiving = false;
 
@@ -53,10 +55,9 @@ public class ReceiveFrame extends JFrame{
         new ReceiveFrame().setVisible(true);
     }
 
-    //contractor
     public ReceiveFrame(){
         receiveFrame = this;
-        setTitle("Wlan File Receiver v1.0");
+        setTitle("文件接收端 v2.0");
         setLayout(new BorderLayout());
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(FrameSolution.FRAME_X, FrameSolution.FRAME_Y, FrameSolution.FRAME_WIDTH, FrameSolution.FRAME_HEIGHT);
@@ -67,15 +68,15 @@ public class ReceiveFrame extends JFrame{
         panel.setBackground(new Color(0,150,136));
         add(panel,BorderLayout.CENTER);
 
-        //containers
+        //初始化所有组件
         initPanel();
 
-        //Events
+        //所有事件
         events();
 
-        //about my ip
-        JOptionPane.showMessageDialog(this,"You May Have Many Other IPs ,So You Have to Choose " +
-                "the Correct One ,Whitch You Want to Use!","Warning",JOptionPane.WARNING_MESSAGE);
+        //多个IP
+        JOptionPane.showMessageDialog(this,"如果本机有多个IP，请使用与发送端在同一局域网的IP地址",
+                "Warning",JOptionPane.WARNING_MESSAGE);
     }
 
     //components
@@ -89,7 +90,7 @@ public class ReceiveFrame extends JFrame{
         panel.add(closeBtn);
 
         //ip tips
-        ipLbl = new JLabel("Your IP Address :");
+        ipLbl = new JLabel("本机IP:");
         ipLbl.setForeground(Color.white);
         ipLbl.setFont(new Font("",Font.BOLD,15));
         ipLbl.setBounds(25,20, FrameSolution.FRAME_WIDTH - 50,20);
@@ -115,7 +116,7 @@ public class ReceiveFrame extends JFrame{
         panel.add(chsFileBtn);
 
         //file info label
-        fileInfoLbl = new JLabel("Your Directory :");
+        fileInfoLbl = new JLabel("保存路径:");
         fileInfoLbl.setFont(new Font("",Font.BOLD,15));
         fileInfoLbl.setForeground(Color.white);
         fileInfoLbl.setBounds(25,80, FrameSolution.FRAME_WIDTH - 50,20);
@@ -138,7 +139,7 @@ public class ReceiveFrame extends JFrame{
         panel.add(fileInfoTxa);
 
         //sent button
-        submitBtn = new JButton("Submit");
+        submitBtn = new JButton("确定");
         submitBtn.setFont(new Font("",Font.PLAIN,15));
         submitBtn.setHorizontalAlignment(SwingConstants.CENTER);
         submitBtn.setBackground(Color.white);
@@ -147,7 +148,7 @@ public class ReceiveFrame extends JFrame{
         panel.add(submitBtn);
 
         //cancel button
-        cancelBtn = new JButton("Exit");
+        cancelBtn = new JButton("退出");
         cancelBtn.setFont(new Font("",Font.PLAIN,15));
         cancelBtn.setHorizontalAlignment(SwingConstants.CENTER);
         cancelBtn.setBackground(Color.white);
@@ -187,36 +188,7 @@ public class ReceiveFrame extends JFrame{
         });
 
         //move and drag
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                panel.addMouseMotionListener(new MouseMotionAdapter() {
-                    int orgX = -1 , orgY = -1;
-                    @Override
-                    public void mouseDragged(MouseEvent e) {
-                        if (!mousePressed){
-                            orgX = -1;
-                            orgY = -1;
-                            mousePressed = true;
-                        }
-                        if(orgX == -1 && orgY == -1){
-                            orgX = e.getX();
-                            orgY = e.getY();
-                        }
-                        int x = e.getX() - orgX + receiveFrame.getLocation().x;
-                        int y = e.getY() - orgY + receiveFrame.getLocation().y;
-                        receiveFrame.setLocation(x,y);
-                    }
-                });
-            }
-        }).start();
-
-        panel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                mousePressed = false;
-            }
-        });
+        SharedMethods.windowDragMove(receiveFrame,panel);
 
         //choose dir
         chsFileBtn.addMouseListener(new MouseAdapter() {
@@ -234,10 +206,10 @@ public class ReceiveFrame extends JFrame{
                     }
                     //user can find directory only
                     if (jFileChooser.getSelectedFile() == null) {
-                        JOptionPane.showMessageDialog(receiveFrame,"You Haven't Selected a File!","Warning",JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(receiveFrame,"请选择一个保存路径！","Warning",JOptionPane.WARNING_MESSAGE);
                     } else {
                         if (!jFileChooser.getSelectedFile().canWrite()) {
-                            JOptionPane.showMessageDialog(receiveFrame,"This Location Can't Be Write!");
+                            JOptionPane.showMessageDialog(receiveFrame,"这个路径不能写入文件！");
                         } else {
                             chsFile = jFileChooser.getSelectedFile();
                             showChsFile(chsFile);
@@ -256,7 +228,7 @@ public class ReceiveFrame extends JFrame{
                         @Override
                         public void run() {
                             if (chsFile == null){
-                                JOptionPane.showMessageDialog(receiveFrame,"Please Choose Your Download Location First!","Warning",JOptionPane.WARNING_MESSAGE);
+                                JOptionPane.showMessageDialog(receiveFrame,"请选择一个保存路径！","Warning",JOptionPane.WARNING_MESSAGE);
                             } else {
                                 submitBtn.setEnabled(false);
                                 chsFileBtn.setEnabled(false);
@@ -317,8 +289,8 @@ public class ReceiveFrame extends JFrame{
      */
     private void confirmExit() {
         if (isReceiving){
-            Object[] options = { "OK", "CANCEL" };
-            int status = JOptionPane.showOptionDialog(receiveFrame, "Click OK to Continue",
+            Object[] options = { "确定", "取消" };
+            int status = JOptionPane.showOptionDialog(receiveFrame, "确定退出？",
                     "Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                     null, options, options[0]);
             //user select value 0 = OK , 1 = Cancel
@@ -347,7 +319,7 @@ public class ReceiveFrame extends JFrame{
                         i.printStackTrace();
                     }
                 }
-                fileInfoTxa.append("Total Used: "+time+" S\n");
+                fileInfoTxa.append("使用时间: "+time+" 秒\n");
             }
         }).start();
     }
@@ -358,10 +330,10 @@ public class ReceiveFrame extends JFrame{
      */
     private void showChsFile(File chsFile) {
         if (chsFile == null){
-            JOptionPane.showMessageDialog(receiveFrame,"You Haven't Selected a Directory!","Warning",JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(receiveFrame,"请选择一个保存路径","Warning",JOptionPane.WARNING_MESSAGE);
             fileInfoTxa.setText("");
         } else {
-            fileInfoTxa.setText("Download Location: "+chsFile.getAbsolutePath());
+            fileInfoTxa.setText("保存路径: "+chsFile.getAbsolutePath());
         }
     }
 }
