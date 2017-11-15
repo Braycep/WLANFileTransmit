@@ -7,10 +7,11 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.Locale;
 
 public class SendFrame extends JFrame{
-    //containers
+    //components
     private static JFrame sendFrame;
     private static JPanel panel;
     private static JLabel ipLbl;
@@ -264,8 +265,7 @@ public class SendFrame extends JFrame{
                                         JOptionPane.WARNING_MESSAGE,null,objects,objects[1]);
                                 if (status == 0){
                                     submitBtnClicked = true;
-                                    submitBtn.setEnabled(false);
-                                    chsFileBtn.setEnabled(false);
+                                    changeSubmitBtnStatus(false);
                                     //JOptionPane.showMessageDialog(sendFrame,"Make Sure the Receiver Is Waitting!","Warning",JOptionPane.WARNING_MESSAGE);
                                     getIP();
                                     isSending = true;
@@ -319,6 +319,8 @@ public class SendFrame extends JFrame{
                     }
                 }
                 fileInfoTxa.append("Total Used: "+time+" S\n");
+                submitBtn.setText("Send");
+                changeSubmitBtnStatus(true);
             }
         }).start();
     }
@@ -344,16 +346,27 @@ public class SendFrame extends JFrame{
         fileInfoTxa.setText("File Name: "+chsFile.getName()+"\n");
         fileInfoTxa.append("Expanded-name: "+name[name.length-1]+"\n");
         long len = chsFile.length();
-        if (len < 10240){
+        if (len < 1024){
             fileInfoTxa.append("Size: "+(chsFile.length())+" B\n");
-        }else if (len >= 10240 && len < 1024000) {
-            //10K~1000K
-            fileInfoTxa.append("Size: "+(chsFile.length()/1024)+" Kb\n");
-        }else if (len >= 1024000 && len < 102400000) {
-            fileInfoTxa.append("Size: "+(chsFile.length()/1024/1024)+" Mb\n");
+        }else if (len >= 1024 && len < 1024000) {
+            //1K~1000K
+            fileInfoTxa.append("Size: "+getFloatSize(1024)+" Kb\n");
+        }else if (len >= 1024000 && len < 1024000000) {
+            //1M~1000M
+            fileInfoTxa.append("Size: "+getFloatSize(1048576)+" Mb\n");
         }else {
-            fileInfoTxa.append("Size: "+(chsFile.length()/1024/1024/1024)+" Gb\n");
+            //1G~1000G
+            fileInfoTxa.append("Size: "+getFloatSize(1073741824)+" Gb\n");
         }
         fileInfoTxa.append("Location: "+chsFile.getAbsolutePath()+"\n");
+    }
+
+    private static String getFloatSize(double value){
+        return (new DecimalFormat("#.000").format(chsFile.length()/value));
+    }
+
+    private static void changeSubmitBtnStatus(boolean flag){
+        submitBtn.setEnabled(flag);
+        chsFileBtn.setEnabled(flag);
     }
 }
